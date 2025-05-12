@@ -1,7 +1,6 @@
 import { ProSituation, HomeSituation } from 'generated/prisma';
-import { Occupant } from '../entities/occupant.entity';
 
-export class OccupantDto {
+export class Occupant {
     id: string;
     firstname: string;
     lastname: string;
@@ -11,7 +10,7 @@ export class OccupantDto {
     income: number;
     phone: string;
 
-    constructor(object: Occupant) {
+    constructor(object: any) {
         Object.assign(this, object);
     }
 }

@@ -12,25 +12,26 @@ import { OccupantsService } from './occupants.service';
 import { CreateOccupantDto, createOccupantSchema } from './dto/create-occupant.dto';
 import { UpdateOccupantDto, updateOccupantSchema } from './dto/update-occupant.dto';
 import { ZodError } from 'zod';
+import { OccupantDto } from './dto/occupant.dto';
 
 @Controller('occupants')
 export class OccupantsController {
   constructor(private readonly occupantsService: OccupantsService) { }
 
   @Post()
-  create(@Body() createOccupantDto: CreateOccupantDto) {
+  async create(@Body() createOccupantDto: CreateOccupantDto) {
     const createOccupant = createOccupantSchema.parse(createOccupantDto);
-    return this.occupantsService.create(createOccupant);
+    return this.occupantsService.create(createOccupant).then((occupant) => new OccupantDto(occupant));
   }
 
   @Get()
-  findAll() {
-    return this.occupantsService.findAll();
+  async findAll() {
+    return this.occupantsService.findAll().then((occupants) => occupants.map(occupant => new OccupantDto(occupant)));
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.occupantsService.findOne(id);
+    return this.occupantsService.findOne(id).then((occupant) => new OccupantDto(occupant));
   }
 
   @Patch(':id')
@@ -39,11 +40,11 @@ export class OccupantsController {
     @Body() updateOccupantDto: UpdateOccupantDto,
   ) {
     const updateOccupant = updateOccupantSchema.parse(updateOccupantDto);
-    return this.occupantsService.update(id, updateOccupant);
+    return this.occupantsService.update(id, updateOccupant).then((occupant) => new OccupantDto(occupant));
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.occupantsService.remove(id);
+    return this.occupantsService.remove(id).then((occupant) => new OccupantDto(occupant));
   }
 }

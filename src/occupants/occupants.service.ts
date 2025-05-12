@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateOccupantDto } from './dto/create-occupant.dto';
 import { UpdateOccupantDto } from './dto/update-occupant.dto';
 import { occupantSelector } from './selector/occupants.selector';
-import { OccupantDto } from './dto/occupant.dto';
+import { Occupant } from './entities/occupant.entity';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -13,14 +13,14 @@ export class OccupantsService {
         const newOccupant = await this.prismaService.occupant.create({
             data: createOccupantDto, select: occupantSelector
         });
-        return new OccupantDto(newOccupant);
+        return new Occupant(newOccupant);
     }
 
     async findAll() {
         const occupants = await this.prismaService.occupant.findMany({
             select: occupantSelector,
         })
-        return occupants.map(occupant => new OccupantDto(occupant));
+        return occupants.map(occupant => new Occupant(occupant));
     }
 
     async findOne(id: string) {
@@ -28,7 +28,7 @@ export class OccupantsService {
             where: { id: id },
             select: occupantSelector,
         })
-        return new OccupantDto(occupant);
+        return new Occupant(occupant);
     }
 
 
@@ -38,7 +38,7 @@ export class OccupantsService {
             data: updateOccupantDto,
             select: occupantSelector,
         })
-        return new OccupantDto(occupant);
+        return new Occupant(occupant);
 
     }
 
@@ -47,6 +47,6 @@ export class OccupantsService {
             where: { id: id },
             select: occupantSelector,
         })
-        return new OccupantDto(occupant);
+        return new Occupant(occupant);
     }
 }
