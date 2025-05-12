@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateOccupantDto } from './dto/create-occupant.dto';
 import { UpdateOccupantDto } from './dto/update-occupant.dto';
 import { occupantSelector } from './selector/occupants.selector';
@@ -9,32 +9,37 @@ import { PrismaService } from '../prisma.service';
 export class OccupantsService {
     constructor(private prismaService: PrismaService) { }
 
-    async create(createOccupantDto: CreateOccupantDto) {
+    async create(userId: string, createOccupantDto: CreateOccupantDto) {
+        const data = {
+            ...createOccupantDto,
+            userId: userId,
+        }
         const newOccupant = await this.prismaService.occupant.create({
-            data: createOccupantDto, select: occupantSelector
+            data: data, select: occupantSelector
         });
         return new Occupant(newOccupant);
     }
 
-    async findAll() {
+    async findAll(userId: string) {
         const occupants = await this.prismaService.occupant.findMany({
+            where: { userId: userId },
             select: occupantSelector,
         })
         return occupants.map(occupant => new Occupant(occupant));
     }
 
-    async findOne(id: string) {
+    async findOne(userId: string, id: string) {
         const occupant = await this.prismaService.occupant.findUniqueOrThrow({
-            where: { id: id },
+            where: { userId: userId, id: id },
             select: occupantSelector,
         })
         return new Occupant(occupant);
     }
 
 
-    async update(id: string, updateOccupantDto: UpdateOccupantDto) {
+    async update(userId: string, id: string, updateOccupantDto: UpdateOccupantDto) {
         const occupant = await this.prismaService.occupant.update({
-            where: { id: id },
+            where: { userId: userId, id: id },
             data: updateOccupantDto,
             select: occupantSelector,
         })
@@ -42,9 +47,9 @@ export class OccupantsService {
 
     }
 
-    async remove(id: string) {
+    async remove(userId: string, id: string) {
         const occupant = await this.prismaService.occupant.delete({
-            where: { id: id },
+            where: { userId: userId, id: id },
             select: occupantSelector,
         })
         return new Occupant(occupant);

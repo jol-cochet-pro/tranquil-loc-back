@@ -1,11 +1,4 @@
+import { generateSelector } from "src/common/utils";
+import { Occupant } from "../entities/occupant.entity";
 
-export const occupantSelector = {
-    id: true,
-    email: true,
-    firstname: true,
-    lastname: true,
-    homeSituation: true,
-    proSituation: true,
-    income: true,
-    phone: true,
-}
+export const occupantSelector = generateSelector(Occupant);

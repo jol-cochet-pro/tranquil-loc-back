@@ -1,13 +1,4 @@
+import { generateSelector } from "src/common/utils";
+import { User } from "../entities/user.entity";
 
-export const userSelector = {
-    id: true,
-    email: true,
-    password: true,
-    firstname: true,
-    lastname: true,
-    dateOfBirth: true,
-    opennedEmail: true,
-    phone: true,
-    searchState: true,
-    type: true,
-}
+export const userSelector = generateSelector(User);

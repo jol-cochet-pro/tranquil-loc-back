@@ -25,6 +25,8 @@ model User {
   phone        String
   searchState  SearchState
   type         UserType
+
+  occupants Occupant[]
 }
 
 model Occupant {
@@ -37,6 +39,8 @@ model Occupant {
   income        Int
   phone         String
   documents     Document[]
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
 }
 
 model Document {

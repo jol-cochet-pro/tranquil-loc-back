@@ -1,4 +1,4 @@
-import { ProSituation, HomeSituation } from 'generated/prisma';
+import { ProSituation, HomeSituation, User } from 'generated/prisma';
 
 export class Occupant {
     id: string;
@@ -9,6 +9,7 @@ export class Occupant {
     proSituation: ProSituation;
     income: number;
     phone: string;
+    userId: string;
 
     constructor(object: any) {
         Object.assign(this, object);

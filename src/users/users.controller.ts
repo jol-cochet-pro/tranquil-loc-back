@@ -3,10 +3,11 @@ import { UsersService } from './users.service';
 import { CreateUserDto, createUserSchema } from './dto/create-user.dto';
 import { UpdateUserDto, updateUserSchema } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
@@ -14,9 +15,9 @@ export class UsersController {
     return this.usersService.create(createUser).then((user) => new UserDto(user));
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @Patch()
+  async update(@CurrentUser('id') userId: string, @Body() updateUserDto: UpdateUserDto) {
     const updateUser = updateUserSchema.parse(updateUserDto);
-    return this.usersService.update(id, updateUser).then((user) => new UserDto(user));
+    return this.usersService.update(userId, updateUser).then((user) => new UserDto(user));
   }
 }
