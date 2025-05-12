@@ -5,6 +5,7 @@ import { UserJwtDto } from './dto/user-jwt.dto';
 import { CreateUserDto, createUserSchema } from 'src/users/dto/create-user.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +25,7 @@ export class AuthController {
   }
 
   @Get('me')
-  async findMe(@Request() request) {
-    return request.user;
+  async findMe(@CurrentUser() user) {
+    return user;
   }
 }
