@@ -1,15 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  BadRequestException,
+} from '@nestjs/common';
 import { OccupantsService } from './occupants.service';
-import { CreateOccupantDto } from './dto/create-occupant.dto';
-import { UpdateOccupantDto } from './dto/update-occupant.dto';
+import { CreateOccupantDto, createOccupantSchema } from './dto/create-occupant.dto';
+import { UpdateOccupantDto, updateOccupantSchema } from './dto/update-occupant.dto';
+import { ZodError } from 'zod';
 
 @Controller('occupants')
 export class OccupantsController {
-  constructor(private readonly occupantsService: OccupantsService) {}
+  constructor(private readonly occupantsService: OccupantsService) { }
 
   @Post()
   create(@Body() createOccupantDto: CreateOccupantDto) {
-    return this.occupantsService.create(createOccupantDto);
+    const createOccupant = createOccupantSchema.parse(createOccupantDto);
+    return this.occupantsService.create(createOccupant);
   }
 
   @Get()
@@ -18,17 +29,21 @@ export class OccupantsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.occupantsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.occupantsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOccupantDto: UpdateOccupantDto) {
-    return this.occupantsService.update(+id, updateOccupantDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateOccupantDto: UpdateOccupantDto,
+  ) {
+    const updateOccupant = updateOccupantSchema.parse(updateOccupantDto);
+    return this.occupantsService.update(id, updateOccupant);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.occupantsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return this.occupantsService.remove(id);
   }
 }

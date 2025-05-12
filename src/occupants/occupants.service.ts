@@ -1,26 +1,52 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOccupantDto } from './dto/create-occupant.dto';
 import { UpdateOccupantDto } from './dto/update-occupant.dto';
+import { occupantSelector } from './selector/occupants.selector';
+import { OccupantDto } from './dto/occupant.dto';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class OccupantsService {
-  create(createOccupantDto: CreateOccupantDto) {
-    return 'This action adds a new occupant';
-  }
+    constructor(private prismaService: PrismaService) { }
 
-  findAll() {
-    return `This action returns all occupants`;
-  }
+    async create(createOccupantDto: CreateOccupantDto) {
+        const newOccupant = await this.prismaService.occupant.create({
+            data: createOccupantDto, select: occupantSelector
+        });
+        return new OccupantDto(newOccupant);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} occupant`;
-  }
+    async findAll() {
+        const occupants = await this.prismaService.occupant.findMany({
+            select: occupantSelector,
+        })
+        return occupants.map(occupant => new OccupantDto(occupant));
+    }
 
-  update(id: number, updateOccupantDto: UpdateOccupantDto) {
-    return `This action updates a #${id} occupant`;
-  }
+    async findOne(id: string) {
+        const occupant = await this.prismaService.occupant.findUniqueOrThrow({
+            where: { id: id },
+            select: occupantSelector,
+        })
+        return occupant;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} occupant`;
-  }
+
+    async update(id: string, updateOccupantDto: UpdateOccupantDto) {
+        const occupant = await this.prismaService.occupant.update({
+            where: { id: id },
+            data: updateOccupantDto,
+            select: occupantSelector,
+        })
+        return occupant;
+
+    }
+
+    async remove(id: string) {
+        const occupant = await this.prismaService.occupant.delete({
+            where: { id: id },
+            select: occupantSelector,
+        })
+        return occupant;
+    }
 }
