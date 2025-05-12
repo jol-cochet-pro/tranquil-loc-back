@@ -7,7 +7,7 @@ export const createUserSchema = z.object({
     password: z.string().nonempty(),
     firstname: z.string().nonempty(),
     lastname: z.string().nonempty(),
-    dateOfBirth: z.date(),
+    dateOfBirth: z.string().datetime(),
     phone: z.string().nonempty(),
     type: z.nativeEnum(UserType),
 })

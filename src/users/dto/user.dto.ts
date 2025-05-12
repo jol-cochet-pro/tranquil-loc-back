@@ -1,6 +1,7 @@
-import { SearchState, UserType } from "generated/prisma";
+import { SearchState, User, UserType } from "generated/prisma";
 
 export class UserDto {
+    id: string;
     email: string;
     firstname: string;
     lastname: string;
@@ -10,7 +11,8 @@ export class UserDto {
     searchState: SearchState;
     type: UserType;
 
-    constructor(object: any) {
-        Object.assign(object, this);
+    constructor(object: User) {
+        const { password, ...result } = object;
+        Object.assign(this, result);
     }
 }

@@ -1,14 +1,14 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { userSelector } from './selector/user.selector';
 import { SearchState } from 'generated/prisma';
-import { UserDto } from './dto/user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
     const data = {
@@ -19,7 +19,15 @@ export class UsersService {
     const user = await this.prismaService.user.create({
       data: data, select: userSelector,
     })
-    return new UserDto(user);
+    return new User(user);
+  }
+
+  async findOneByEmail(email: string) {
+    const user = await this.prismaService.user.findUniqueOrThrow({
+      where: { email: email },
+      select: userSelector,
+    })
+    return new User(user);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -28,6 +36,6 @@ export class UsersService {
       data: updateUserDto,
       select: userSelector,
     })
-    return new UserDto(user);
+    return new User(user);
   }
 }
