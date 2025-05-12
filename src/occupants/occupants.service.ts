@@ -28,7 +28,7 @@ export class OccupantsService {
             where: { id: id },
             select: occupantSelector,
         })
-        return occupant;
+        return new OccupantDto(occupant);
     }
 
 
@@ -38,7 +38,7 @@ export class OccupantsService {
             data: updateOccupantDto,
             select: occupantSelector,
         })
-        return occupant;
+        return new OccupantDto(occupant);
 
     }
 
@@ -47,6 +47,6 @@ export class OccupantsService {
             where: { id: id },
             select: occupantSelector,
         })
-        return occupant;
+        return new OccupantDto(occupant);
     }
 }
