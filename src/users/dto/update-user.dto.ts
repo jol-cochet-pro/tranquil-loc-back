@@ -1,6 +1,6 @@
-import { createUserSchema } from './create-user.dto';
+import { updateUserSchema } from '../entities/update-user.entity';
 import { z } from 'zod';
 
-export const updateUserSchema = createUserSchema.partial();
+export const updateUserDtoSchema = updateUserSchema;
 
-export type UpdateUserDto = z.infer<typeof updateUserSchema>;
+export type UpdateUserDto = z.infer<typeof updateUserDtoSchema>;

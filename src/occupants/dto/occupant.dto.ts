@@ -1,17 +1,4 @@
-import { ProSituation, HomeSituation } from 'generated/prisma';
-import { Occupant } from '../entities/occupant.entity';
+import { occupantSchema } from '../entities/occupant.entity';
 
-export class OccupantDto {
-    id: string;
-    firstname: string;
-    lastname: string;
-    email: string;
-    homeSituation: HomeSituation;
-    proSituation: ProSituation;
-    income: number;
-    phone: string;
+export const occupantDtoSchema = occupantSchema.omit({ userId: true });
 
-    constructor(object: Occupant) {
-        Object.assign(this, object);
-    }
-}

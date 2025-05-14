@@ -1,18 +1,20 @@
 import { SearchState, UserType } from "generated/prisma";
+import { z } from "zod";
 
-export class User {
-    id: string; 
-    email: string;
-    password: string;
-    firstname: string;
-    lastname: string;
-    dateOfBirth: Date;
-    opennedEmail: number;
-    phone: string;
-    searchState: SearchState;
-    type: UserType;
+export const userSchema = z.object({
+    id: z.string(),
+    email: z.string(),
+    password: z.string(),
+    firstname: z.string(),
+    lastname: z.string(),
+    dateOfBirth: z.date(),
+    opennedEmail: z.number(),
+    phone: z.string(),
+    type: z.nativeEnum(UserType),
+    searchState: z.nativeEnum(SearchState),
+    emailVerified: z.boolean(),
+    infosFilled: z.boolean(),
 
-    constructor(object: any) {
-        Object.assign(this, object);
-    }
-}
+})
+
+export type User = z.infer<typeof userSchema>;

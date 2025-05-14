@@ -1,4 +1,4 @@
 import { generateSelector } from "src/common/utils";
-import { User } from "../entities/user.entity";
+import { userSchema } from "../entities/user.entity";
 
-export const userSelector = generateSelector(User);
+export const userSelector = generateSelector(userSchema);

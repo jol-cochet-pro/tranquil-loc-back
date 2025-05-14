@@ -1,16 +1,16 @@
-import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { userSelector } from './selector/user.selector';
 import { SearchState } from 'generated/prisma';
-import { User } from './entities/user.entity';
+import { userSchema } from './entities/user.entity';
+import { UpdateUser } from './entities/update-user.entity';
+import { CreateUser } from './entities/create-user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) { }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUser) {
     const data = {
       ...createUserDto,
       opennedEmail: 0,
@@ -19,7 +19,7 @@ export class UsersService {
     const user = await this.prismaService.user.create({
       data: data, select: userSelector,
     })
-    return new User(user);
+    return userSchema.parse(user);
   }
 
   async findOneByEmail(email: string) {
@@ -27,15 +27,22 @@ export class UsersService {
       where: { email: email },
       select: userSelector,
     })
-    return new User(user);
+    return userSchema.parse(user);
   }
-
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.prismaService.user.update({
+  async findOne(id: string) {
+    const user = await this.prismaService.user.findUniqueOrThrow({
       where: { id: id },
-      data: updateUserDto,
       select: userSelector,
     })
-    return new User(user);
+    return userSchema.parse(user);
+  }
+
+  async update(id: string, updateUser: UpdateUser) {
+    const user = await this.prismaService.user.update({
+      where: { id: id },
+      data: updateUser,
+      select: userSelector,
+    });
+    return userSchema.parse(user);
   }
 }

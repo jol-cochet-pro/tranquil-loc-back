@@ -1,11 +1,13 @@
+import { z } from "zod";
 
-
-export const generateSelector = <T extends object>(cls: new (...args: any[]) => T): Record<keyof T, true> => {
-    const instance = new cls({}); // Crée une instance vide
-    const keys = Object.keys(instance) as (keyof T)[];
+export const generateSelector = <T extends z.ZodRawShape>(
+    schema: z.ZodObject<T>
+  ): Record<keyof T, true> => {
+    const shape = schema.shape;
+    const keys = Object.keys(shape) as (keyof T)[];
     const selector: Record<keyof T, true> = {} as any;
-    keys.forEach(key => {
-        selector[key] = true;
+    keys.forEach((key) => {
+      selector[key] = true;
     });
     return selector;
-};
+  };

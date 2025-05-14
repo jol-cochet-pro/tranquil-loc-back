@@ -1,9 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateOccupantDto } from './dto/create-occupant.dto';
 import { UpdateOccupantDto } from './dto/update-occupant.dto';
 import { occupantSelector } from './selector/occupants.selector';
-import { Occupant } from './entities/occupant.entity';
 import { PrismaService } from '../prisma.service';
+import { occupantSchema } from './entities/occupant.entity';
 
 @Injectable()
 export class OccupantsService {
@@ -17,7 +17,7 @@ export class OccupantsService {
         const newOccupant = await this.prismaService.occupant.create({
             data: data, select: occupantSelector
         });
-        return new Occupant(newOccupant);
+        return occupantSchema.parse(newOccupant);
     }
 
     async findAll(userId: string) {
@@ -25,7 +25,7 @@ export class OccupantsService {
             where: { userId: userId },
             select: occupantSelector,
         })
-        return occupants.map(occupant => new Occupant(occupant));
+        return occupants.map(occupant => occupantSchema.parse(occupant));
     }
 
     async findOne(userId: string, id: string) {
@@ -33,7 +33,7 @@ export class OccupantsService {
             where: { userId: userId, id: id },
             select: occupantSelector,
         })
-        return new Occupant(occupant);
+        return occupantSchema.parse(occupant);
     }
 
 
@@ -43,7 +43,7 @@ export class OccupantsService {
             data: updateOccupantDto,
             select: occupantSelector,
         })
-        return new Occupant(occupant);
+        return occupantSchema.parse(occupant);
 
     }
 
@@ -52,6 +52,6 @@ export class OccupantsService {
             where: { userId: userId, id: id },
             select: occupantSelector,
         })
-        return new Occupant(occupant);
+        return occupantSchema.parse(occupant);
     }
 }

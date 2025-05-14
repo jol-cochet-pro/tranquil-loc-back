@@ -1,6 +1,6 @@
-import { createOccupantSchema } from './create-occupant.dto';
 import { z } from 'zod';
+import { updateOccupantSchema } from '../entities/update-occupant.entity';
 
-export const updateOccupantSchema = createOccupantSchema.partial()
+export const updateOccupantDtoSchema = updateOccupantSchema;
 
-export type UpdateOccupantDto = z.infer<typeof updateOccupantSchema>;
+export type UpdateOccupantDto = z.infer<typeof updateOccupantDtoSchema>;

@@ -1,11 +1,12 @@
-import { Body, Controller, Get, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CredentialsDto } from './dto/credentials.dto';
-import { UserJwtDto } from './dto/user-jwt.dto';
-import { CreateUserDto, createUserSchema } from 'src/users/dto/create-user.dto';
-import { UserDto } from 'src/users/dto/user.dto';
+import { CredentialsDto, credentialsSchema } from './dto/credentials.dto';
+import { userDtoSchema } from 'src/users/dto/user.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { userJwtDtoSchema } from './dto/user-jwt.dto';
+import { updateUserSchema } from 'src/users/entities/update-user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -13,19 +14,27 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  async signIn(@Body() credentials: CredentialsDto) {
-    return this.authService.signIn(credentials).then((user) => new UserJwtDto(user));
+  async signIn(@Body() credentialsDto: CredentialsDto) {
+    const credentials = credentialsSchema.parse(credentialsDto);
+    return this.authService.signIn(credentials).then((user) => userJwtDtoSchema.parse(user));
   }
 
   @Public()
+  @Post('pre-register')
+  async preRegister(@Body() credentialsDto: CredentialsDto) {
+    const credentials = credentialsSchema.parse(credentialsDto);
+    return this.authService.preRegister(credentials).then((user) => userJwtDtoSchema.parse(user));
+  }
+
   @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    const createUser = createUserSchema.parse(createUserDto);
-    return this.authService.register(createUser).then((user) => new UserDto(user));
+  async register(@CurrentUser('id') userId: string,  @Body() updateUserDto: UpdateUserDto) {
+    const updateUser = updateUserSchema.parse(updateUserDto);
+    return this.authService.register(userId, updateUser).then((user) => userDtoSchema.parse(user));
   }
 
   @Get('me')
   async findMe(@CurrentUser() user) {
-    return user;
+    const { accessToken, iat, exp, ...other } = user
+    return other;
   }
 }

@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ConflictException, ExceptionFilter, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaClientKnownRequestError } from "generated/prisma/runtime/library";
 import { Response } from 'express';
+import { ApiException } from "../dto/api-exception.dto";
 
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
@@ -10,12 +11,18 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
         let httpError = new InternalServerErrorException(error);
 
+        let errorContent: ApiException = {
+            code: "unknown"
+        };
+
         switch (error.code) {
             case "P2025":
-                httpError = new NotFoundException(error.meta);
+                errorContent = { code: "not-found" },
+                httpError = new NotFoundException(errorContent);
                 break;
             case "P2002":
-                httpError = new ConflictException(error.meta);
+                errorContent = { code: "conflict" },
+                httpError = new ConflictException(errorContent);
                 break;
         }
         response.status(httpError.getStatus()).json(httpError);

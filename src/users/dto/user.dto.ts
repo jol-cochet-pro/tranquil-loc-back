@@ -1,18 +1,6 @@
-import { SearchState, User, UserType } from "generated/prisma";
+import { z } from "zod";
+import { userSchema } from "../entities/user.entity";
 
-export class UserDto {
-    id: string;
-    email: string;
-    firstname: string;
-    lastname: string;
-    dateOfBirth: Date;
-    opennedEmail: number;
-    phone: string;
-    searchState: SearchState;
-    type: UserType;
+export const userDtoSchema = userSchema.omit({ password: true, emailVerified: true, infosFilled: true });
 
-    constructor(object: User) {
-        const { password, ...result } = object;
-        Object.assign(this, result);
-    }
-}
+export type UserDto = z.infer<typeof userDtoSchema>;

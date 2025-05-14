@@ -8,6 +8,9 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaExceptionFilter());
   app.useGlobalFilters(new ZodExceptionFilter());
   const port = process.env.PORT ?? 3000;
+  app.enableCors({
+    origin: "http://localhost:8080"
+  })
   await app.listen(port);
   console.log(`Listening on port ${port}`);
 }

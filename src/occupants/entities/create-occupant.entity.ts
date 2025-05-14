@@ -1,14 +1,14 @@
-import { ProSituation, HomeSituation } from 'generated/prisma';
+import { HomeSituation, ProSituation } from 'generated/prisma';
 import { z } from 'zod';
 
-export const occupantSchema = z.object({
-    id: z.string().uuid(),
+export const createOccupantSchema = z.object({
     firstname: z.string().nonempty(),
     lastname: z.string().nonempty(),
     email: z.string().email().nonempty(),
     homeSituation: z.nativeEnum(HomeSituation),
     proSituation: z.nativeEnum(ProSituation),
     income: z.number().nonnegative(),
-    phone: z.string(),
-    userId: z.string(),
-});
+    phone: z.string()
+})
+
+export type CreateOccupant = z.infer<typeof createOccupantSchema>;

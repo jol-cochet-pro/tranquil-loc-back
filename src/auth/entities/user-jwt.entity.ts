@@ -1,13 +1,10 @@
-import { OmitType, PickType } from "@nestjs/mapped-types";
-import { User } from "src/users/entities/user.entity";
+import { userSchema } from "src/users/entities/user.entity";
+import { z } from "zod";
 
-export class UserJwt extends PickType(User, ["email", "id"]) {
-    accessToken: string;
-
-    constructor(object: any) {
-        super({});
-        this.id = object.id;
-        this.email = object.email;
-        this.accessToken = object.accessToken;
-    }
-}
+export const userJwtSchema = userSchema.pick({ 
+        id: true, 
+        email: true, 
+        emailVerified: true, 
+        infosFilled: true 
+    })
+    .merge(z.object({ accessToken: z.string().nonempty(), }));
