@@ -5,9 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthGuard } from './common/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { MailModule } from './common/mail/mail.module';
 
 @Module({
-  imports: [OccupantsModule, UsersModule, AuthModule, ConfigModule.forRoot()],
+  imports: [OccupantsModule, UsersModule, AuthModule, ConfigModule.forRoot(), MailModule],
   controllers: [],
   providers: [
     {
