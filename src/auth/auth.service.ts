@@ -36,7 +36,7 @@ export class AuthService {
             password: password,
             firstname: '',
             lastname: '',
-            dateOfBirth: date.toISOString() ,
+            dateOfBirth: date ,
             phone: '',
             type: 'OTHER',
         }

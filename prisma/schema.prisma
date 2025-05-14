@@ -79,7 +79,7 @@ enum SearchState {
 }
 
 enum UserType {
-  TENANT
+  OCCUPANT
   WARRANTOR
   OTHER
 }
