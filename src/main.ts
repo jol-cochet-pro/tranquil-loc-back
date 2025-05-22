@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalFilters(new ZodExceptionFilter());
   const port = process.env.PORT ?? 3000;
   app.enableCors({
-    origin: "http://localhost:8080"
+    origin: "*" // Change this
   })
   await app.listen(port);
   console.log(`Listening on port ${port}`);

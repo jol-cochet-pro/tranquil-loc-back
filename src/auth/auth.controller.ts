@@ -13,7 +13,7 @@ export class AuthController {
   constructor(private authService: AuthService) { }
 
   @Public()
-  @Post('login')
+  @Post('sign-in')
   async signIn(@Body() credentialsDto: CredentialsDto) {
     const credentials = credentialsSchema.parse(credentialsDto);
     return this.authService.signIn(credentials).then((user) => userJwtDtoSchema.parse(user));
@@ -27,7 +27,7 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@CurrentUser('id') userId: string,  @Body() updateUserDto: UpdateUserDto) {
+  async register(@CurrentUser('id') userId: string, @Body() updateUserDto: UpdateUserDto) {
     const updateUser = updateUserSchema.parse(updateUserDto);
     return this.authService.register(userId, updateUser).then((user) => userDtoSchema.parse(user));
   }

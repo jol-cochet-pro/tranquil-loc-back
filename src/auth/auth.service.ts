@@ -35,12 +35,12 @@ export class AuthService {
             password: password,
             firstname: '',
             lastname: '',
-            dateOfBirth: date ,
+            dateOfBirth: date.toISOString(),
             phone: '',
             type: 'OTHER',
         }
         const createUser = createUserSchema.parse(createUserDto);
-        await this.usersService.create(createUser); 
+        await this.usersService.create(createUser);
         const userJwt = await this.signIn(credentialsDto);
         return userJwtSchema.parse(userJwt);
     }
