@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from 'node-mailjet';
+import { TemplateName, TEMPLATES, TemplateVariables } from './template';
 
 @Injectable()
 export class MailService {
@@ -17,7 +18,7 @@ export class MailService {
         );
     }
 
-    async sendEmail(to: string, templateId: number, variables: any) {
+    async sendEmail<T extends TemplateName>(to: string, templateName: T, variables: TemplateVariables<T>) {
         await this.mailjet.post('send', { version: 'v3.1' }).request({
             Messages: [
                 {
@@ -26,7 +27,7 @@ export class MailService {
                         Name: 'Tranquil\'loc',
                     },
                     To: [{ Email: to }],
-                    TemplateID: templateId, 
+                    TemplateID: TEMPLATES[templateName].id,
                     Variables: variables
                 }
             ]

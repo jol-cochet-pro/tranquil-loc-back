@@ -7,6 +7,7 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { userJwtDtoSchema } from './dto/user-jwt.dto';
 import { updateUserSchema } from 'src/users/entities/update-user.entity';
+import { userJwtSchema } from './entities/user-jwt.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -33,8 +34,7 @@ export class AuthController {
   }
 
   @Get('me')
-  async findMe(@CurrentUser() user) {
-    const { accessToken, iat, exp, ...other } = user
-    return other;
+  async findMe(@CurrentUser('id') userId: string) {
+    return this.authService.findMe(userId).then((user) => userJwtDtoSchema.parse(user));
   }
 }

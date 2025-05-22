@@ -45,4 +45,12 @@ export class UsersService {
     });
     return userSchema.parse(user);
   }
+
+  async remove(id: string) {
+    const user = await this.prismaService.user.delete({
+      where: { id: id },
+      select: userSelector,
+    })
+    return userSchema.parse(user);
+  }
 }

@@ -8,10 +8,12 @@ import { UpdateUser } from 'src/users/entities/update-user.entity';
 import { createUserSchema } from 'src/users/entities/create-user.entity';
 import { userJwtSchema } from './entities/user-jwt.entity';
 import { userDtoSchema } from 'src/users/dto/user.dto';
+import { MailService } from 'src/common/mail/mail.service';
+import { userSchema } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService, private jwtService: JwtService) { }
+    constructor(private usersService: UsersService, private jwtService: JwtService, private mailService: MailService) { }
 
     async signIn(credentials: CredentialsDto) {
         try {
@@ -54,6 +56,16 @@ export class AuthService {
             ...updateUser,
             infosFilled: true,
         }
-        return this.usersService.update(userId, data).then((user) => userDtoSchema.parse(user));
+        const updatedUser = await this.usersService.update(userId, data);
+        try {
+            await this.mailService.sendEmail(updatedUser.email, "email_verification", { firstname: updatedUser.firstname, link: "http://localhost:3000/dashboard" })
+        } catch {
+            return this.usersService.remove(updatedUser.id);
+        }
+        return updatedUser;
+    }
+
+    async findMe(userId: string) {
+        return this.usersService.findOne(userId).then((user) => userJwtSchema.parse({ ...user, accessToken: "" }));
     }
 }
