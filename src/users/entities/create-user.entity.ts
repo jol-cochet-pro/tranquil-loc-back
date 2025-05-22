@@ -11,6 +11,7 @@ export const createUserSchema = z.object({
     type: z.nativeEnum(UserType),
     infosFilled: z.boolean().default(false),
     emailVerified: z.boolean().default(false),
+    otp: z.string().nullable().default(null),
 })
 
 export type CreateUser = z.infer<typeof createUserSchema>;

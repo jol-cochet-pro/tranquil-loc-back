@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { compareSync, genSaltSync, hashSync } from "bcrypt";
 import { CredentialsDto } from './dto/credentials.dto';
@@ -7,9 +7,9 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUser } from 'src/users/entities/update-user.entity';
 import { createUserSchema } from 'src/users/entities/create-user.entity';
 import { userJwtSchema } from './entities/user-jwt.entity';
-import { userDtoSchema } from 'src/users/dto/user.dto';
 import { MailService } from 'src/common/mail/mail.service';
-import { userSchema } from 'src/users/entities/user.entity';
+import { randomInt } from 'node:crypto';
+import { Otp } from './entities/otp.entity';
 
 @Injectable()
 export class AuthService {
@@ -40,6 +40,7 @@ export class AuthService {
             dateOfBirth: date.toISOString(),
             phone: '',
             type: 'OTHER',
+
         }
         const createUser = createUserSchema.parse(createUserDto);
         await this.usersService.create(createUser);
@@ -52,17 +53,32 @@ export class AuthService {
         if (user.infosFilled) {
             throw new UnauthorizedException();
         }
+        const otpNumber = 10000 + randomInt(89999);
+        const salt = genSaltSync();
+        const otp = hashSync(otpNumber.toString(), salt);
         const data = {
             ...updateUser,
             infosFilled: true,
+            otp: otp,
         }
         const updatedUser = await this.usersService.update(userId, data);
         try {
-            await this.mailService.sendEmail(updatedUser.email, "email_verification", { firstname: updatedUser.firstname, link: "http://localhost:3000/dashboard" })
+            await this.mailService.sendEmail(updatedUser.email, "email_verification", { firstname: updatedUser.firstname, otp: otpNumber.toString() })
         } catch {
             return this.usersService.remove(updatedUser.id);
         }
         return updatedUser;
+    }
+
+    async checkEmail(userId: string, otp: Otp) {
+        const user = await this.usersService.findOne(userId);
+        if (user.emailVerified)
+            throw new ForbiddenException();
+        if (!user.otp)
+            throw new NotFoundException();
+        if (!compareSync(otp.code.toString(), user.otp))
+            throw new BadRequestException();
+        await this.usersService.update(userId, { emailVerified: true });
     }
 
     async findMe(userId: string) {

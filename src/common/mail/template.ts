@@ -6,7 +6,7 @@ export const TEMPLATES = {
         id: 6984848,
         variables: {
             firstname: true,
-            link: true,
+            otp: true,
         }
     }
 }

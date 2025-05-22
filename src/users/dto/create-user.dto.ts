@@ -3,7 +3,7 @@ import { createUserSchema } from "../entities/create-user.entity";
 
 
 export const createUserDtoSchema = createUserSchema
-    .omit({ emailVerified: true, infosFilled: true })
+    .omit({ emailVerified: true, infosFilled: true, otp: true })
     .extend({
         dateOfBirth: z.string().datetime({ local: true })
     })

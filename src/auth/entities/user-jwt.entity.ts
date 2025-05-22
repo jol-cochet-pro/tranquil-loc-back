@@ -5,6 +5,6 @@ export const userJwtSchema = userSchema.pick({
     id: true,
     email: true,
     emailVerified: true,
-    infosFilled: true
+    infosFilled: true,
 })
     .merge(z.object({ accessToken: z.string(), }));
