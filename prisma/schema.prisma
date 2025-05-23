@@ -31,6 +31,7 @@ model User {
 
   occupants  Occupant[]
   warrantors Warrantor[]
+  shares     Share[]
 }
 
 model Warrantor {
@@ -67,12 +68,37 @@ model Document {
   id          String     @id @default(uuid())
   name        String
   url         String
-  occupant    Occupant   @relation(fields: [occupantId], references: [id])
-  occupantId  String
-  Warrantor   Warrantor? @relation(fields: [warrantorId], references: [id])
+  occupant    Occupant?  @relation(fields: [occupantId], references: [id])
+  occupantId  String?
+  warrantor   Warrantor? @relation(fields: [warrantorId], references: [id])
   warrantorId String?
 
   @@unique([name, occupantId])
+}
+
+model Share {
+  id             String              @id @default(uuid())
+  description    String
+  email          String
+  durationNum    Int
+  durationPeriod ShareDurationPeriod
+  createdAt      DateTime            @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+enum SharePermission {
+  READ_INFO
+  READ_FILE
+  WRITE
+  NONE
+}
+
+enum ShareDurationPeriod {
+  DAY
+  WEEK
+  MONTH
 }
 
 enum HomeSituation {

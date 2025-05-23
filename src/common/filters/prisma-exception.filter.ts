@@ -4,7 +4,6 @@ import { PrismaClientKnownRequestError } from "generated/prisma/runtime/library"
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
     catch(error: PrismaClientKnownRequestError, host: ArgumentsHost) {
-        console.error(error);
         let httpError = new InternalServerErrorException(error);
         switch (error.code) {
             case "P2025":

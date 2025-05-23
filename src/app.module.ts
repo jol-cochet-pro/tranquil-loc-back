@@ -7,9 +7,10 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { MailModule } from './common/mail/mail.module';
 import { WarrantorsModule } from './warrantors/warrantors.module';
+import { SharesModule } from './shares/shares.module';
 
 @Module({
-  imports: [OccupantsModule, WarrantorsModule, UsersModule, AuthModule, ConfigModule.forRoot(), MailModule],
+  imports: [OccupantsModule, WarrantorsModule, UsersModule, AuthModule, ConfigModule.forRoot(), MailModule, SharesModule],
   controllers: [],
   providers: [
     {
