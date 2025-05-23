@@ -10,6 +10,7 @@ import { userJwtSchema } from './entities/user-jwt.entity';
 import { MailService } from 'src/common/mail/mail.service';
 import { randomInt } from 'node:crypto';
 import { Otp } from './entities/otp.entity';
+import { userJwtDtoSchema } from './dto/user-jwt.dto';
 
 @Injectable()
 export class AuthService {
@@ -82,6 +83,6 @@ export class AuthService {
     }
 
     async findMe(userId: string) {
-        return this.usersService.findOne(userId).then((user) => userJwtSchema.parse({ ...user, accessToken: "" }));
+        return this.usersService.findOne(userId);
     }
 }

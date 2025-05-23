@@ -43,6 +43,6 @@ export class AuthController {
 
   @Get('me')
   async findMe(@CurrentUser('id') userId: string) {
-    return this.authService.findMe(userId).then((user) => userJwtDtoSchema.parse(user));
+    return this.authService.findMe(userId).then((user) => userDtoSchema.parse(user));
   }
 }
