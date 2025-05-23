@@ -8,6 +8,7 @@ export const createOccupantSchema = z.object({
     homeSituation: z.nativeEnum(HomeSituation),
     proSituation: z.nativeEnum(ProSituation),
     income: z.number().nonnegative(),
+    dateOfBirth: z.string().datetime({ local: true }).transform((arg) => new Date(arg)),
     phone: z.string()
 })
 

@@ -9,6 +9,7 @@ export const occupantSchema = z.object({
     homeSituation: z.nativeEnum(HomeSituation),
     proSituation: z.nativeEnum(ProSituation),
     income: z.number().nonnegative(),
+    dateOfBirth: z.date(),
     phone: z.string(),
     userId: z.string(),
 });

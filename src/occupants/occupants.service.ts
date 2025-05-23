@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { CreateOccupantDto } from './dto/create-occupant.dto';
-import { UpdateOccupantDto } from './dto/update-occupant.dto';
 import { occupantSelector } from './selector/occupants.selector';
 import { PrismaService } from '../prisma.service';
 import { occupantSchema } from './entities/occupant.entity';
+import { CreateOccupant } from './entities/create-occupant.entity';
+import { UpdateOccupant } from './entities/update-occupant.entity';
 
 @Injectable()
 export class OccupantsService {
     constructor(private prismaService: PrismaService) { }
 
-    async create(userId: string, createOccupantDto: CreateOccupantDto) {
+    async create(userId: string, createOccupant: CreateOccupant) {
         const data = {
-            ...createOccupantDto,
+            ...createOccupant,
             userId: userId,
         }
         const newOccupant = await this.prismaService.occupant.create({
@@ -37,10 +37,10 @@ export class OccupantsService {
     }
 
 
-    async update(userId: string, id: string, updateOccupantDto: UpdateOccupantDto) {
+    async update(userId: string, id: string, updateOccupant: UpdateOccupant) {
         const occupant = await this.prismaService.occupant.update({
             where: { userId: userId, id: id },
-            data: updateOccupantDto,
+            data: updateOccupant,
             select: occupantSelector,
         })
         return occupantSchema.parse(occupant);
