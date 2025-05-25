@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from 'node-mailjet';
 import { TemplateName, TEMPLATES, TemplateVariables } from './template';
+import { Attachment, attachmentSchema } from './entity/attachment.entity';
 
 @Injectable()
 export class MailService {
@@ -18,7 +19,8 @@ export class MailService {
         );
     }
 
-    async sendEmail<T extends TemplateName>(to: string, templateName: T, variables: TemplateVariables<T>) {
+    async sendEmail<T extends TemplateName>(to: string, templateName: T, variables: TemplateVariables<T>, attachments?: Attachment[]) {
+        attachments?.forEach((attachment) => attachmentSchema.parse(attachment));
         await this.mailjet.post('send', { version: 'v3.1' }).request({
             Messages: [
                 {
@@ -28,7 +30,8 @@ export class MailService {
                     },
                     To: [{ Email: to }],
                     TemplateID: TEMPLATES[templateName].id,
-                    Variables: variables
+                    Variables: variables,
+                    InlinedAttachments: attachments ?? [],
                 }
             ]
         })

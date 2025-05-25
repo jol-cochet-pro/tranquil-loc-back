@@ -4,7 +4,6 @@ import { ZodError } from "zod";
 @Catch(ZodError)
 export class ZodExceptionFilter implements ExceptionFilter {
     catch(error: ZodError) {
-        console.error(error);
         throw new BadRequestException();
     }
 }
