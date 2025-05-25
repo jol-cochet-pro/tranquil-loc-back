@@ -64,21 +64,38 @@ model Occupant {
 }
 
 model Document {
-  id          String     @id @default(uuid())
-  name        String
-  url         String
-  occupant    Occupant   @relation(fields: [occupantId], references: [id])
-  occupantId  String
-  Warrantor   Warrantor? @relation(fields: [warrantorId], references: [id])
+  id          String       @id @default(uuid())
+  type        DocumentType
+  key         String       @unique
+  occupant    Occupant?    @relation(fields: [occupantId], references: [id])
+  occupantId  String?
+  warrantor   Warrantor?   @relation(fields: [warrantorId], references: [id])
   warrantorId String?
-
-  @@unique([name, occupantId])
 }
 
 enum HomeSituation {
   TENANT
   OWNER
   OTHER
+}
+
+enum DocumentType {
+  IDENTITY_DOCUMENTS
+  PROOF_OF_ADDRESS
+  TAX_NOTICE
+  EMPLOYMENT_CONTRACT
+  LAST_THREE_PAYSLIPS
+  PENSION_CERTIFICATE
+  APPRENTICESHIP_FORM
+  SCHOOL_ENROLLMENT_CERTIFICATE
+  ARE_CERTIFICATE
+  JOB_OFFER
+  EMPLOYER_CERTIFICATE
+  REGISTRATION_SIRENE
+  FINANCIAL_STATEMENT
+  OTHER
+
+  @@map("DocumentName")
 }
 
 enum ProSituation {

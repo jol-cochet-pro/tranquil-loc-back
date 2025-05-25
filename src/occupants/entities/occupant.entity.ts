@@ -1,4 +1,5 @@
 import { ProSituation, HomeSituation } from 'generated/prisma';
+import { documentSchema } from 'src/documents/entities/document.entity';
 import { z } from 'zod';
 
 export const occupantSchema = z.object({
@@ -12,4 +13,5 @@ export const occupantSchema = z.object({
     dateOfBirth: z.date(),
     phone: z.string(),
     userId: z.string(),
+    documents: z.array(documentSchema),
 });

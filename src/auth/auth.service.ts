@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { compareSync, genSaltSync, hashSync } from "bcrypt";
 import { CredentialsDto } from './dto/credentials.dto';
@@ -66,7 +66,8 @@ export class AuthService {
         try {
             await this.mailService.sendEmail(updatedUser.email, "email_verification", { firstname: updatedUser.firstname, otp: otpNumber.toString() })
         } catch {
-            return this.usersService.remove(updatedUser.id);
+            await this.usersService.remove(updatedUser.id);
+            throw new InternalServerErrorException();
         }
         return updatedUser;
     }
