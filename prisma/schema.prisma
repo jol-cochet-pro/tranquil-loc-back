@@ -75,12 +75,14 @@ model Document {
 }
 
 model Share {
-  id             String              @id @default(uuid())
-  description    String
-  email          String
-  durationNum    Int
-  durationPeriod ShareDurationPeriod
-  createdAt      DateTime            @default(now())
+  id                  String              @id @default(uuid())
+  description         String
+  email               String
+  durationNum         Int
+  durationPeriod      ShareDurationPeriod
+  occupantPermission  SharePermission
+  warrantorPermission SharePermission
+  createdAt           DateTime            @default(now())
 
   user   User   @relation(fields: [userId], references: [id])
   userId String

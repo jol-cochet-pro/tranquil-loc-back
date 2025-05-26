@@ -8,5 +8,6 @@ import { DocumentsModule } from 'src/documents/documents.module';
   imports: [DocumentsModule],
   controllers: [OccupantsController],
   providers: [OccupantsService, PrismaService],
+  exports: [OccupantsService]
 })
 export class OccupantsModule { }

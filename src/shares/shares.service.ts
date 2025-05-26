@@ -6,10 +6,23 @@ import { shareSelector } from './selector/share.selector';
 import { shareSchema } from './entities/share.entity';
 import { MailService } from 'src/common/mail/mail.service';
 import { UsersService } from 'src/users/users.service';
+import { OccupantsService } from 'src/occupants/occupants.service';
+import { WarrantorsService } from 'src/warrantors/warrantors.service';
+import { Attachment } from 'src/common/mail/entity/attachment.entity';
+import { DocumentsService } from 'src/documents/documents.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class SharesService {
-  constructor(private prismaService: PrismaService, private mailService: MailService, private usersService: UsersService) { }
+  constructor(
+    private prismaService: PrismaService,
+    private mailService: MailService,
+    private usersService: UsersService,
+    private occupantsService: OccupantsService,
+    private warrantorsService: WarrantorsService,
+    private documentsService: DocumentsService,
+    private jwtService: JwtService,
+  ) { }
 
   async create(userId: string, createShare: CreateShare) {
     const user = await this.usersService.findOne(userId);
@@ -21,14 +34,32 @@ export class SharesService {
       data: data,
       select: shareSelector,
     })
-    const link = "http://localhost:3000/test";
-    const documents_list = []
+
+    const occupants = await this.occupantsService.findAll(userId);
+    const warrantors = await this.warrantorsService.findAll(userId);
+
+    const documents = await Promise.all([
+      ...occupants.flatMap((occupant) => occupant.documents),
+      ...warrantors.flatMap((warrantor) => warrantor.documents)
+    ].map((document) => this.documentsService.findOne(document.id, "content")));
+
+    const attachments: Attachment[] = documents.map((document, i) => ({
+      Base64Content: document["content"].data,
+      ContentType: document["content"].type,
+      Filename: `coucou${i}${document.key.substring(document.key.lastIndexOf("."))}`,
+    }));
+
+    const token = this.jwtService.sign({ id: share.id }, {
+      expiresIn: '1h',
+      secret: process.env.SHARE_JWT_SECRET,
+    });
+
     try {
       await this.mailService.sendEmail(share.email, "share_folder", {
         firstname: user.firstname,
         lastname: user.lastname,
-        link: link,
-      })
+        link: `http://localhost:8080/shared-folder?token=${token}`,
+      }, attachments);
     } catch (_) {
       await this.remove(userId, share.id)
     }
@@ -43,7 +74,7 @@ export class SharesService {
     return shares.map((share) => shareSchema.parse(share));
   }
 
-  async findOne(userId: string, id: string) {
+  async findOne(id: string, userId?: string) {
     const share = await this.prismaService.share.findUniqueOrThrow({
       where: { id: id, userId: userId },
       select: shareSelector,

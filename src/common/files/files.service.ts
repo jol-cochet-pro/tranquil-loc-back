@@ -46,6 +46,15 @@ export class FilesService {
         return url;
     }
 
+    async retrieveContent(key: string) {
+        const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
+        const response = await this.s3Client.send(command);
+        return {
+            data: await response.Body?.transformToString("base64"),
+            type: response.ContentType,
+        };
+    }
+
     async delete(key: string) {
         const command = new DeleteObjectCommand({ Bucket: this.bucket, Key: key });
         try {

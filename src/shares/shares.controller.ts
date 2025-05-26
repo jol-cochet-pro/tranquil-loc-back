@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { SharesService } from './shares.service';
 import { CreateShareDto } from './dto/create-share.dto';
 import { UpdateShareDto } from './dto/update-share.dto';
@@ -6,6 +6,8 @@ import { updateShareSchema } from './entities/update-share.entity';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { createShareSchema } from './entities/create-share.entity';
 import { shareDtoSchema } from './dto/share.dto';
+import { ShareGuard } from 'src/common/guards/share.guard';
+import { CurrentShared } from 'src/common/decorators/current-shared.decorator';
 
 @Controller('shares')
 export class SharesController {
@@ -24,7 +26,13 @@ export class SharesController {
 
   @Get(':id')
   async findOne(@CurrentUser('id') userId: string, @Param('id') id: string) {
-    return this.sharesService.findOne(userId, id).then((share) => shareDtoSchema.parse(share));
+    return this.sharesService.findOne(id, userId).then((share) => shareDtoSchema.parse(share));
+  }
+
+  @UseGuards(ShareGuard)
+  @Get('/shared')
+  async findOneByToken(@CurrentShared('id') shareId: string) {
+    return this.sharesService.findOne(shareId).then((share) => shareDtoSchema.parse(share));
   }
 
   @Patch(':id')

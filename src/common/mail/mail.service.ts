@@ -21,6 +21,14 @@ export class MailService {
 
     async sendEmail<T extends TemplateName>(to: string, templateName: T, variables: TemplateVariables<T>, attachments?: Attachment[]) {
         attachments?.forEach((attachment) => attachmentSchema.parse(attachment));
+
+        // Transform string list in html list
+        for (const keys in variables) {
+            if (Array.isArray(variables[keys])) {
+                variables[keys] = variables[keys].reduce((prev, curr) => prev + `<li> ${curr} </li>`, "<ul>") + "</ul>";
+            }
+        }
+
         await this.mailjet.post('send', { version: 'v3.1' }).request({
             Messages: [
                 {

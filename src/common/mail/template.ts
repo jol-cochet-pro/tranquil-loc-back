@@ -12,7 +12,6 @@ export const TEMPLATES = {
             firstname: true,
             lastname: true,
             link: true,
-            documents_list: true,
         }
     }
 }
@@ -22,5 +21,5 @@ export type TemplateName = keyof typeof TEMPLATES;
 export type ExpectedVariableNames<T extends TemplateName> = keyof typeof TEMPLATES[T]['variables'];
 
 export type TemplateVariables<T extends TemplateName> = {
-    [K in ExpectedVariableNames<T>]: string;
+    [K in ExpectedVariableNames<T>]: string | string[];
 };

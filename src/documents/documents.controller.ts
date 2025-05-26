@@ -10,6 +10,6 @@ export class DocumentsController {
 
     @Get(':id')
     async findOne(@Param('id') id: string) {
-        return this.documentsService.findOne(id).then((document) => documentUrlDtoSchema.parse(document));
+        return this.documentsService.findOne(id, "url").then((document) => documentUrlDtoSchema.parse(document));
     }
 }

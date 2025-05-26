@@ -17,7 +17,8 @@ export class OccupantsService {
             userId: userId,
         }
         const newOccupant = await this.prismaService.occupant.create({
-            data: data, select: occupantSelector
+            data: data,
+            select: occupantSelector
         });
         try {
             const newDocuments = await Promise.all(documents.map((document) =>
