@@ -10,6 +10,7 @@ import { WarrantorsModule } from './warrantors/warrantors.module';
 import { DocumentsModule } from './documents/documents.module';
 import { FilesModule } from './common/files/files.module';
 import { SharesModule } from './shares/shares.module';
+import { SharedInfosModule } from './shared-infos/shared-infos.module';
 
 
 @Module({
@@ -22,9 +23,9 @@ import { SharesModule } from './shares/shares.module';
     MailModule,
     DocumentsModule,
     FilesModule,
-    SharesModule
+    SharesModule,
+    SharedInfosModule
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_GUARD,

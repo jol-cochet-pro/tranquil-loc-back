@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { compareSync, genSaltSync, hashSync } from "bcrypt";
 import { CredentialsDto } from './dto/credentials.dto';
@@ -10,11 +10,14 @@ import { userJwtSchema } from './entities/user-jwt.entity';
 import { MailService } from 'src/common/mail/mail.service';
 import { randomInt } from 'node:crypto';
 import { Otp } from './entities/otp.entity';
-import { userJwtDtoSchema } from './dto/user-jwt.dto';
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService, private jwtService: JwtService, private mailService: MailService) { }
+    constructor(
+        private usersService: UsersService,
+        private jwtService: JwtService,
+        private mailService: MailService
+    ) { }
 
     async signIn(credentials: CredentialsDto) {
         try {

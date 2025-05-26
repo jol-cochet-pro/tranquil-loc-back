@@ -4,7 +4,7 @@ import { Request } from 'express';
 
 
 @Injectable()
-export class ShareGuard implements CanActivate {
+export class SharedGuard implements CanActivate {
     constructor(private jwtService: JwtService) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {

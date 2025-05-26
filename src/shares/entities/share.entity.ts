@@ -10,4 +10,5 @@ export const shareSchema = z.object({
     durationPeriod: z.nativeEnum(ShareDurationPeriod),
     occupantPermission: z.nativeEnum(SharePermission),
     warrantorPermission: z.nativeEnum(SharePermission),
+    userId: z.string().uuid(),
 })

@@ -6,11 +6,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/common/mail/mail.module';
 
 @Module({
-  imports: [MailModule, UsersModule, JwtModule.register({
-    global: true,
-    secret: process.env.JWT_SECRET,
-    signOptions: { expiresIn: '1h' }
-  })],
+  imports: [
+    MailModule, 
+    UsersModule, 
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' }
+    })
+  ],
   controllers: [AuthController],
   providers: [AuthService],
 })

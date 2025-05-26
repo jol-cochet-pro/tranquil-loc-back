@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const credentialsSchema = z.object({
+export const credentialsDtoSchema = z.object({
     email: z.string().email(),
     password: z.string().min(8).max(20)
         .refine((password) => /[A-Z]/.test(password))
@@ -9,4 +9,4 @@ export const credentialsSchema = z.object({
         .refine((password) => /[;!@#$%^&*]/.test(password)),
 })
 
-export type CredentialsDto = z.infer<typeof credentialsSchema>; 
+export type CredentialsDto = z.infer<typeof credentialsDtoSchema>; 

@@ -16,9 +16,14 @@ import { JwtModule } from '@nestjs/jwt';
     OccupantsModule,
     WarrantorsModule,
     DocumentsModule,
-    JwtModule
+    JwtModule.register({
+      global: true,
+      secret: process.env.SHARED_JWT_SECRET,
+      signOptions: { expiresIn: '1h' }
+    })
   ],
   controllers: [SharesController],
   providers: [SharesService, PrismaService],
+  exports: [SharesService]
 })
 export class SharesModule { }

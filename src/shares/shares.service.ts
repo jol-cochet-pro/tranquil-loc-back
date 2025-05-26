@@ -58,7 +58,7 @@ export class SharesService {
       await this.mailService.sendEmail(share.email, "share_folder", {
         firstname: user.firstname,
         lastname: user.lastname,
-        link: `http://localhost:8080/shared-folder?token=${token}`,
+        link: `http://localhost:8080/#/shared-folder?token=${token}`,
       }, attachments);
     } catch (_) {
       await this.remove(userId, share.id)

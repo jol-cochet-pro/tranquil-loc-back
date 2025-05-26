@@ -1,13 +1,12 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CredentialsDto, credentialsSchema } from './dto/credentials.dto';
+import { CredentialsDto, credentialsDtoSchema } from './dto/credentials.dto';
 import { userDtoSchema } from 'src/users/dto/user.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
-import { UserJwtDto, userJwtDtoSchema } from './dto/user-jwt.dto';
+import { userJwtDtoSchema } from './dto/user-jwt.dto';
 import { updateUserSchema } from 'src/users/entities/update-user.entity';
-import { userJwtSchema } from './entities/user-jwt.entity';
 import { OtpDto } from './dto/otp.dto';
 import { otpSchema } from './entities/otp.entity';
 
@@ -18,14 +17,14 @@ export class AuthController {
   @Public()
   @Post('sign-in')
   async signIn(@Body() credentialsDto: CredentialsDto) {
-    const credentials = credentialsSchema.parse(credentialsDto);
+    const credentials = credentialsDtoSchema.parse(credentialsDto);
     return this.authService.signIn(credentials).then((user) => userJwtDtoSchema.parse(user));
   }
 
   @Public()
   @Post('pre-register')
   async preRegister(@Body() credentialsDto: CredentialsDto) {
-    const credentials = credentialsSchema.parse(credentialsDto);
+    const credentials = credentialsDtoSchema.parse(credentialsDto);
     return this.authService.preRegister(credentials).then((user) => userJwtDtoSchema.parse(user));
   }
 
