@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Header, StreamableFile, UseGuards } from '@nestjs/common';
 import { SharedInfosService } from './shared-infos.service';
 import { CurrentShared } from 'src/common/decorators/current-shared.decorator';
 import { sharedInfosDtoSchema } from './dto/shared-infos.dto';

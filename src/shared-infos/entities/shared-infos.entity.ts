@@ -8,4 +8,5 @@ export const sharedInfosSchema = z.object({
     user: userContactSchema,
     occupants: z.array(occupantSchema),
     warrantors: z.array(warrantorSchema),
+    zipUrl: z.string().url(),
 })

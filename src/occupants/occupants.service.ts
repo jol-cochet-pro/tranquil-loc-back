@@ -22,7 +22,7 @@ export class OccupantsService {
         });
         try {
             const newDocuments = await Promise.all(documents.map((document) =>
-                this.documentsService.create(newOccupant.id, document, "occupant")
+                this.documentsService.create(userId, newOccupant.id, document, "occupant")
             ));
             return occupantSchema.parse({ ...newOccupant, documents: newDocuments });
         } catch {
@@ -53,7 +53,7 @@ export class OccupantsService {
         try {
             // Create / Update all documents
             await Promise.all(documents?.map((document) =>
-                this.documentsService.create(id, document, "occupant")) ?? []
+                this.documentsService.create(userId, id, document, "occupant")) ?? []
             );
 
             // Delete old documents

@@ -5,6 +5,7 @@ import { userContactSchema } from 'src/users/entities/user-contact.entity';
 import { UsersService } from 'src/users/users.service';
 import { WarrantorsService } from 'src/warrantors/warrantors.service';
 import { sharedInfosSchema } from './entities/shared-infos.entity';
+import { DocumentsService } from 'src/documents/documents.service';
 
 @Injectable()
 export class SharedInfosService {
@@ -12,7 +13,8 @@ export class SharedInfosService {
     private usersService: UsersService,
     private occupantsService: OccupantsService,
     private warrantorsService: WarrantorsService,
-    private sharesService: SharesService
+    private sharesService: SharesService,
+    private documentsService: DocumentsService,
   ) { }
 
   async findOne(shareId: string) {
@@ -23,8 +25,8 @@ export class SharedInfosService {
     const occupants = await this.occupantsService.findAll(user.id);
     const warrantors = await this.warrantorsService.findAll(user.id);
 
-    return sharedInfosSchema.parse({ user: user, occupants: occupants, warrantors: warrantors });
+    const zipUrl = await this.documentsService.createZip(user.id);
+
+    return sharedInfosSchema.parse({ user: user, occupants: occupants, warrantors: warrantors, zipUrl: zipUrl });
   }
-
-
 }

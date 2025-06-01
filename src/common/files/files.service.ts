@@ -1,6 +1,8 @@
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ZipArchive } from '@shortercode/webzip';
+import { createReadStream } from 'fs';
 
 @Injectable()
 export class FilesService {
@@ -24,13 +26,11 @@ export class FilesService {
             }
         })
     }
-
-    async store(key: string, body: string, mime: string) {
-        const buffer = Buffer.from(body, "base64");
+    async store(key: string, body: Buffer | Uint8Array, mime: string) {
         const command = new PutObjectCommand({
             Bucket: this.bucket,
             Key: key,
-            Body: buffer,
+            Body: body,
             ContentType: mime,
         });
         try {
@@ -38,6 +38,16 @@ export class FilesService {
         } catch {
             throw new InternalServerErrorException();
         }
+    }
+
+    async zip(key: string, files: { name: string, content: Blob }[]) {
+        const archive = new ZipArchive();
+        for (const file of files) {
+            await archive.set(file.name, file.content);
+        }
+        const data = await archive.to_blob().bytes()
+        this.store(key, data, "application/zip");
+        return this.retrieveUrl(key);
     }
 
     async retrieveUrl(key: string) {
@@ -50,8 +60,8 @@ export class FilesService {
         const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
         const response = await this.s3Client.send(command);
         return {
-            data: await response.Body?.transformToString("base64"),
-            type: response.ContentType,
+            data: await response.Body?.transformToString("base64")!,
+            type: response.ContentType!,
         };
     }
 

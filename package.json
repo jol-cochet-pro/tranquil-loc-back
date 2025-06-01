@@ -29,6 +29,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.7.0",
+    "@shortercode/webzip": "^1.1.1-0",
     "bcrypt": "^6.0.0",
     "node-mailjet": "^6.0.8",
     "reflect-metadata": "^0.2.2",
