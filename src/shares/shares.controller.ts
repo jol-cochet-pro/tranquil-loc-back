@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
 import { SharesService } from './shares.service';
 import { CreateShareDto } from './dto/create-share.dto';
 import { UpdateShareDto } from './dto/update-share.dto';
@@ -12,7 +12,7 @@ export class SharesController {
   constructor(private readonly sharesService: SharesService) { }
 
   @Post()
-  async create(@CurrentUser('id') userId: string, @Body() createShareDto: CreateShareDto) {
+  async create(@CurrentUser('id') userId: string, @Body() createShareDto: CreateShareDto, @Request() req) {
     const createShare = createShareSchema.parse(createShareDto);
     return this.sharesService.create(userId, createShare).then((share) => shareDtoSchema.parse(share));
   }

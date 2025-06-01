@@ -6,8 +6,8 @@ import { MailModule } from 'src/common/mail/mail.module';
 import { OccupantsModule } from 'src/occupants/occupants.module';
 import { UsersModule } from 'src/users/users.module';
 import { WarrantorsModule } from 'src/warrantors/warrantors.module';
-import { DocumentsModule } from 'src/documents/documents.module';
 import { JwtModule } from '@nestjs/jwt';
+import { FilesModule } from 'src/common/files/files.module';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
     OccupantsModule,
     WarrantorsModule,
-    DocumentsModule,
+    FilesModule,
     JwtModule.register({
       global: true,
       secret: process.env.SHARED_JWT_SECRET,

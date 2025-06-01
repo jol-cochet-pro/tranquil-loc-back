@@ -2,7 +2,7 @@ import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } fro
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ZipArchive } from '@shortercode/webzip';
-import { createReadStream } from 'fs';
+import { fileSchema } from './entities/file.entity';
 
 @Injectable()
 export class FilesService {
@@ -47,22 +47,20 @@ export class FilesService {
         }
         const data = await archive.to_blob().bytes()
         this.store(key, data, "application/zip");
-        return this.retrieveUrl(key);
+        return this.retrieve(key);
     }
 
-    async retrieveUrl(key: string) {
-        const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
-        const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
-        return url;
-    }
-
-    async retrieveContent(key: string) {
+    async retrieve(key: string) {
         const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
         const response = await this.s3Client.send(command);
-        return {
+        const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
+        const name = url.substring(url.lastIndexOf('/'));
+        return fileSchema.parse({
             data: await response.Body?.transformToString("base64")!,
-            type: response.ContentType!,
-        };
+            contentType: response.ContentType!,
+            name: name,
+            url: url
+        });
     }
 
     async delete(key: string) {

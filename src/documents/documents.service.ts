@@ -5,9 +5,7 @@ import { FilesService } from 'src/common/files/files.service';
 import { documentSchema } from './entities/document.entity';
 import { ResourceType } from './entities/resource-type.entity';
 import { documentSelector } from './selector/document.selector';
-import { documentUrlSchema } from './entities/document-url.entity';
 import { randomUUID } from 'crypto';
-import { documentContentSchema } from './entities/document-content.entity';
 import { b64toBlob } from 'src/common/utils';
 
 
@@ -41,12 +39,11 @@ export class DocumentsService {
         Buffer.from(createDocument.content, "base64"),
         createDocument.mimeType
       );
+      return documentSchema.parse({ ...document, url: "" });
     } catch {
       await this.remove(documentId);
       throw new InternalServerErrorException();
     }
-
-    return documentSchema.parse(document);
   }
 
   async createZip(userId: string) {
@@ -57,10 +54,10 @@ export class DocumentsService {
         select: documentSelector,
       });
       const files = await Promise.all(documents.map(async (document) => {
-        const content = await this.filesService.retrieveContent(document.key);
+        const content = await this.filesService.retrieve(document.key);
         return {
           name: document.type + document.key.substring(document.key.lastIndexOf(".")),
-          content: b64toBlob(content.data, content.type),
+          content: b64toBlob(content.data, content.contentType),
         }
       }));
       return this.filesService.zip(key, files);
@@ -69,17 +66,14 @@ export class DocumentsService {
     }
   }
 
-  async findOne(id: string, info: "url" | "content") {
+  async findOne(userId: string, id: string) {
     const document = await this.prismaService.document.findUniqueOrThrow({
-      where: { id: id },
+      where: { id: id, OR: [{ occupant: { userId: userId } }, { warrantor: { userId: userId } }] },
       select: documentSelector,
     });
-    if (info == "url") {
-      const url = await this.filesService.retrieveUrl(document.key);
-      return documentUrlSchema.parse({ ...document, url: url });
-    }
-    const content = await this.filesService.retrieveContent(document.key);
-    return documentContentSchema.parse({ ...document, content: content })
+    const file = await this.filesService.retrieve(document.key);
+    const name = `${document.type}${document.key.substring(document.key.lastIndexOf("."))}`
+    return documentSchema.parse({ ...document, name: name, url: file.url });
   }
 
   async remove(id: string) {
@@ -88,6 +82,6 @@ export class DocumentsService {
       select: documentSelector,
     });
     await this.filesService.delete(document.key);
-    return documentSchema.parse(document);
+    return documentSchema.parse({ ...document, url: "" });
   }
 }

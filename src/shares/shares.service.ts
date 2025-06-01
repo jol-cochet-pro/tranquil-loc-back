@@ -11,6 +11,8 @@ import { WarrantorsService } from 'src/warrantors/warrantors.service';
 import { Attachment } from 'src/common/mail/entity/attachment.entity';
 import { DocumentsService } from 'src/documents/documents.service';
 import { JwtService } from '@nestjs/jwt';
+import { ShareDurationPeriod } from 'generated/prisma';
+import { FilesService } from 'src/common/files/files.service';
 
 @Injectable()
 export class SharesService {
@@ -20,9 +22,20 @@ export class SharesService {
     private usersService: UsersService,
     private occupantsService: OccupantsService,
     private warrantorsService: WarrantorsService,
-    private documentsService: DocumentsService,
+    private filesService: FilesService,
     private jwtService: JwtService,
   ) { }
+
+  private durationToString(num: number, duration: ShareDurationPeriod) {
+    switch (duration) {
+      case ShareDurationPeriod.DAY:
+        return `${num}d`;
+      case ShareDurationPeriod.WEEK:
+        return `${num * 7}d`;
+      case ShareDurationPeriod.MONTH:
+        return `${num * 30}d`;
+    }
+  }
 
   async create(userId: string, createShare: CreateShare) {
     const user = await this.usersService.findOne(userId);
@@ -41,16 +54,18 @@ export class SharesService {
     const documents = await Promise.all([
       ...occupants.flatMap((occupant) => occupant.documents),
       ...warrantors.flatMap((warrantor) => warrantor.documents)
-    ].map((document) => this.documentsService.findOne(document.id, "content")));
+    ].map((document) => this.filesService.retrieve(document.key)));
 
     const attachments: Attachment[] = documents.map((document, i) => ({
       Base64Content: document["content"].data,
       ContentType: document["content"].type,
-      Filename: `coucou${i}${document.key.substring(document.key.lastIndexOf("."))}`,
+      Filename: "test",
     }));
 
+
+
     const token = this.jwtService.sign({ id: share.id }, {
-      expiresIn: '1h',
+      expiresIn: this.durationToString(share.durationNum, share.durationPeriod),
       secret: process.env.SHARE_JWT_SECRET,
     });
 
