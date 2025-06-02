@@ -41,7 +41,7 @@ export class DocumentsService {
         Buffer.from(createDocument.content, "base64"),
         createDocument.mimeType
       );
-      return documentSchema.parse({ ...document, url: "" });
+      return documentSchema.parse(document);
     } catch {
       await this.remove(documentId);
       throw new InternalServerErrorException();
@@ -73,7 +73,6 @@ export class DocumentsService {
       where: { id: id, OR: [{ occupant: { userId: userId } }, { warrantor: { userId: userId } }] },
       select: documentSelector,
     });
-    console.log(document);
     const file = await this.filesService.retrieve(document.key);
     return documentUrlSchema.parse({ ...document, url: file.Url });
   }
@@ -84,6 +83,6 @@ export class DocumentsService {
       select: documentSelector,
     });
     await this.filesService.delete(document.key);
-    return documentSchema.parse({ ...document, url: "" });
+    return documentSchema.parse(document);
   }
 }
