@@ -56,10 +56,10 @@ export class FilesService {
         const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
         const name = url.substring(url.lastIndexOf('/'));
         return fileSchema.parse({
-            data: await response.Body?.transformToString("base64")!,
-            contentType: response.ContentType!,
-            name: name,
-            url: url
+            Data: await response.Body?.transformToString("base64")!,
+            ContentType: response.ContentType!,
+            Filename: name,
+            Url: url
         });
     }
 

@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from "@nestjs/common";
 import { DocumentsService } from "./documents.service";
-import { documentDtoSchema } from "./dto/document.dto";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
+import { documentUrlDtoSchema } from "./dto/document-url.dto";
 
 
 @Controller('documents')
@@ -10,6 +10,6 @@ export class DocumentsController {
 
     @Get(':id')
     async findOne(@CurrentUser('id') userId: string, @Param('id') id: string) {
-        return this.documentsService.findOne(userId, id).then((document) => documentDtoSchema.parse(document));
+        return this.documentsService.findOne(userId, id).then((document) => documentUrlDtoSchema.parse(document));
     }
 }

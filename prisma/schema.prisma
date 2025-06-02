@@ -68,6 +68,7 @@ model Document {
   id          String       @id @default(uuid())
   type        DocumentType
   key         String       @unique
+  name        String
   occupant    Occupant?    @relation(fields: [occupantId], references: [id])
   occupantId  String?
   warrantor   Warrantor?   @relation(fields: [warrantorId], references: [id])

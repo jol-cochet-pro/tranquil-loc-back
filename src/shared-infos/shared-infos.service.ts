@@ -25,7 +25,7 @@ export class SharedInfosService {
     const occupants = await this.occupantsService.findAll(user.id);
     const warrantors = await this.warrantorsService.findAll(user.id);
 
-    const zipUrl = await this.documentsService.createZip(user.id);
+    const zipUrl = await this.documentsService.findOneZip(user.id);
 
     return sharedInfosSchema.parse({ user: user, occupants: occupants, warrantors: warrantors, zipUrl: zipUrl });
   }

@@ -7,6 +7,7 @@ import { ResourceType } from './entities/resource-type.entity';
 import { documentSelector } from './selector/document.selector';
 import { randomUUID } from 'crypto';
 import { b64toBlob } from 'src/common/utils';
+import { documentUrlSchema } from './entities/document-url.entity';
 
 
 @Injectable()
@@ -22,6 +23,7 @@ export class DocumentsService {
     const data = {
       id: documentId,
       type: createDocument.type,
+      name: `${createDocument.type}.${createDocument.extension}`,
       key: key,
       ...(resourcetype === "occupant"
         ? { occupantId: resourceId }
@@ -46,7 +48,7 @@ export class DocumentsService {
     }
   }
 
-  async createZip(userId: string) {
+  async findOneZip(userId: string) {
     const key = `${userId}/folder.zip`;
     try {
       const documents = await this.prismaService.document.findMany({
@@ -57,7 +59,7 @@ export class DocumentsService {
         const content = await this.filesService.retrieve(document.key);
         return {
           name: document.type + document.key.substring(document.key.lastIndexOf(".")),
-          content: b64toBlob(content.data, content.contentType),
+          content: b64toBlob(content.Data, content.ContentType),
         }
       }));
       return this.filesService.zip(key, files);
@@ -71,9 +73,9 @@ export class DocumentsService {
       where: { id: id, OR: [{ occupant: { userId: userId } }, { warrantor: { userId: userId } }] },
       select: documentSelector,
     });
+    console.log(document);
     const file = await this.filesService.retrieve(document.key);
-    const name = `${document.type}${document.key.substring(document.key.lastIndexOf("."))}`
-    return documentSchema.parse({ ...document, name: name, url: file.url });
+    return documentUrlSchema.parse({ ...document, url: file.Url });
   }
 
   async remove(id: string) {
