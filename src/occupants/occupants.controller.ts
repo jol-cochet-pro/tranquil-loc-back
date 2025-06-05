@@ -12,8 +12,8 @@ import { CreateOccupantDto } from './dto/create-occupant.dto';
 import { UpdateOccupantDto } from './dto/update-occupant.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { createOccupantSchema } from './entities/create-occupant.entity';
-import { updateOccupantSchema } from './entities/update-occupant.entity';
 import { occupantDtoSchema } from './dto/occupant.dto';
+import { updateOccupantSchema } from './entities/update-occupant.entity';
 
 @Controller('occupants')
 export class OccupantsController {

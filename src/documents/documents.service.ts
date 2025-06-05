@@ -5,7 +5,6 @@ import { FilesService } from 'src/common/files/files.service';
 import { documentSchema } from './entities/document.entity';
 import { ResourceType } from './entities/resource-type.entity';
 import { documentSelector } from './selector/document.selector';
-import { randomUUID } from 'crypto';
 import { b64toBlob } from 'src/common/utils';
 import { documentUrlSchema } from './entities/document-url.entity';
 
@@ -15,35 +14,27 @@ export class DocumentsService {
   constructor(private prismaService: PrismaService, private filesService: FilesService) { }
 
   async create(userId: string, resourceId: string, createDocument: CreateDocument, resourcetype: ResourceType) {
-
-    const documentId = randomUUID();
-
-    const key = `${userId}/${resourceId}/${createDocument.type}/${documentId}.${createDocument.extension}`;
-
+    const key = `${userId}/${resourceId}/${createDocument.type}/${createDocument.name}`;
     const data = {
-      id: documentId,
-      type: createDocument.type,
-      name: `${createDocument.type}.${createDocument.extension}`,
+      ...createDocument,
       key: key,
       ...(resourcetype === "occupant"
         ? { occupantId: resourceId }
         : { warrantorId: resourceId }),
     }
-
     const document = await this.prismaService.document.create({
       data: data,
       select: documentSelector,
     });
+    return documentSchema.parse(document);
+  }
 
+  async createFile(userId: string, id: string, file: Express.Multer.File) {
+    const document = await this.findOne(userId, id, false);
+    console.log(document.key);
     try {
-      await this.filesService.store(
-        key,
-        Buffer.from(createDocument.content, "base64"),
-        createDocument.mimeType
-      );
-      return documentSchema.parse(document);
+      await this.filesService.store(document.key, file.buffer, file.mimetype)
     } catch {
-      await this.remove(documentId);
       throw new InternalServerErrorException();
     }
   }
@@ -68,13 +59,16 @@ export class DocumentsService {
     }
   }
 
-  async findOne(userId: string, id: string) {
+  async findOne(userId: string, id: string, hasUrl: boolean) {
     const document = await this.prismaService.document.findUniqueOrThrow({
       where: { id: id, OR: [{ occupant: { userId: userId } }, { warrantor: { userId: userId } }] },
       select: documentSelector,
     });
-    const file = await this.filesService.retrieve(document.key);
-    return documentUrlSchema.parse({ ...document, url: file.Url });
+    if (hasUrl) {
+      const file = await this.filesService.retrieve(document.key);
+      return documentUrlSchema.parse({ ...document, url: file.Url });
+    }
+    return documentSchema.parse(document);
   }
 
   async remove(id: string) {

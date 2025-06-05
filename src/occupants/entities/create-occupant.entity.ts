@@ -11,7 +11,7 @@ export const createOccupantSchema = z.object({
     income: z.number().nonnegative(),
     dateOfBirth: z.string().datetime({ local: true }).transform((arg) => new Date(arg)),
     phone: z.string(),
-    documents: z.array(createDocumentSchema),
+    documents: z.array(createDocumentSchema)
 })
 
 export type CreateOccupant = z.infer<typeof createOccupantSchema>;

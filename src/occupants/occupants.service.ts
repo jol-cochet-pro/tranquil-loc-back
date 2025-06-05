@@ -49,7 +49,7 @@ export class OccupantsService {
 
 
     async update(userId: string, id: string, updateOccupant: UpdateOccupant) {
-        const { documents, removedDocumentsId, ...data } = updateOccupant;
+        const { documents, removedDocumentIds, ...data } = updateOccupant;
         try {
             // Create / Update all documents
             await Promise.all(documents?.map((document) =>
@@ -57,7 +57,7 @@ export class OccupantsService {
             );
 
             // Delete old documents
-            await Promise.all(removedDocumentsId?.map((documentId) =>
+            await Promise.all(removedDocumentIds?.map((documentId) =>
                 this.documentsService.remove(documentId)) ?? []
             );
 
