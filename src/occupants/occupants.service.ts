@@ -5,6 +5,7 @@ import { occupantSchema } from './entities/occupant.entity';
 import { CreateOccupant } from './entities/create-occupant.entity';
 import { UpdateOccupant } from './entities/update-occupant.entity';
 import { DocumentsService } from 'src/documents/documents.service';
+import { getDocumentTypesFromSituation } from 'src/common/utils';
 
 @Injectable()
 export class OccupantsService {
@@ -55,7 +56,7 @@ export class OccupantsService {
             await Promise.all(documents?.map((document) =>
                 this.documentsService.create(userId, id, document, "occupant")) ?? []
             );
-
+            
             // Delete old documents
             await Promise.all(removedDocumentIds?.map((documentId) =>
                 this.documentsService.remove(documentId)) ?? []
@@ -66,6 +67,15 @@ export class OccupantsService {
                 data: data,
                 select: occupantSelector,
             })
+
+            // Delete document that are obsolete because of the proSituation
+            const documentTypes = getDocumentTypesFromSituation(newOccupant.proSituation);
+            await Promise.all(newOccupant.documents.map((document) => {
+                if (documentTypes.includes(document.type))
+                    return ;
+                this.documentsService.remove(document.id);
+            }) ?? []);
+
             return occupantSchema.parse(newOccupant);
         } catch (error) {
             throw new InternalServerErrorException();

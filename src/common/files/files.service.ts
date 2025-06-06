@@ -1,6 +1,6 @@
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ZipArchive } from '@shortercode/webzip';
 import { fileSchema } from './entities/file.entity';
 
@@ -26,6 +26,7 @@ export class FilesService {
             }
         })
     }
+
     async store(key: string, body: Buffer | Uint8Array, mime: string) {
         const command = new PutObjectCommand({
             Bucket: this.bucket,
@@ -51,16 +52,20 @@ export class FilesService {
     }
 
     async retrieve(key: string) {
-        const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
-        const response = await this.s3Client.send(command);
-        const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
-        const name = url.substring(url.lastIndexOf('/'));
-        return fileSchema.parse({
-            Data: await response.Body?.transformToString("base64")!,
-            ContentType: response.ContentType!,
-            Filename: name,
-            Url: url
-        });
+        try {
+            const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
+            const response = await this.s3Client.send(command);
+            const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
+            const name = url.substring(url.lastIndexOf('/'));
+            return fileSchema.parse({
+                Data: await response.Body?.transformToString("base64")!,
+                ContentType: response.ContentType!,
+                Filename: name,
+                Url: url
+            });
+        } catch {
+            throw new NotFoundException();
+        }
     }
 
     async delete(key: string) {

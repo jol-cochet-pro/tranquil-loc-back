@@ -31,7 +31,6 @@ export class DocumentsService {
 
   async createFile(userId: string, id: string, file: Express.Multer.File) {
     const document = await this.findOne(userId, id, false);
-    console.log(document.key);
     try {
       await this.filesService.store(document.key, file.buffer, file.mimetype)
     } catch {
